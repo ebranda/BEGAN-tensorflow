@@ -10,6 +10,8 @@ def get_loader(root, batch_size, scale_size, data_format, split=None, is_graysca
 
     for ext in ["jpg", "png"]:
         paths = glob("{}/*.{}".format(root, ext))
+        print("paths", paths)
+        print("root", root, "ext", ext)
 
         if ext == "jpg":
             tf_decode = tf.image.decode_jpeg
