@@ -140,8 +140,8 @@ class Trainer(object):
 
         self.saver = tf.train.Saver()
         self.summary_writer = tf.summary.FileWriter(self.model_dir)
-        print("MODEL_DIR", self.model_dir, "LOAD_PATH", self.load_path)
-        saverDecorator = ModelSaver(self.saver, tf, self.load_path)
+        
+        saverDecorator = ModelSaver(self.saver, tf, self.model_dir)
 
         sv = tf.train.Supervisor(logdir=self.model_dir,
                                 is_chief=True,
