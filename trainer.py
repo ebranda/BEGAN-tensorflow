@@ -122,7 +122,7 @@ class Trainer(object):
         
         if self.is_train:
             def exit_handler():
-                print "Ended training. Saving model..."
+                print ("Ended training. Saving model...")
                 export_dir = os.path.join(self.model_dir, "model")
                 try:
                     os.mkdir(export_dir)
@@ -131,7 +131,7 @@ class Trainer(object):
                 builder = tf.saved_model.builder.SavedModelBuilder(export_dir)
                 builder.add_meta_graph_and_variables(self.sess, [tf.saved_model.tag_constants.TRAINING])
                 builder.save()
-                print "Saved model."
+                print ("Saved model.")
             atexit.register(exit_handler)
 
     def train(self):
