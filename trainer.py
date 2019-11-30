@@ -119,19 +119,20 @@ class Trainer(object):
             g._finalized = False
 
             self.build_test_model()
-            
-        def exit_handler():
-            print "Ended training. Saving model..."
-            export_dir = os.path.join(self.model_dir, "model")
-            try:
-                os.mkdir(export_dir)
-            except:
-                pass
-            builder = tf.saved_model.builder.SavedModelBuilder(export_dir)
-            builder.add_meta_graph_and_variables(self.sess, [tf.saved_model.tag_constants.TRAINING])
-            builder.save()
-            print "Saved model."
-        atexit.register(exit_handler)
+        
+        if self.is_train:
+            def exit_handler():
+                print "Ended training. Saving model..."
+                export_dir = os.path.join(self.model_dir, "model")
+                try:
+                    os.mkdir(export_dir)
+                except:
+                    pass
+                builder = tf.saved_model.builder.SavedModelBuilder(export_dir)
+                builder.add_meta_graph_and_variables(self.sess, [tf.saved_model.tag_constants.TRAINING])
+                builder.save()
+                print "Saved model."
+            atexit.register(exit_handler)
 
     def train(self):
         z_fixed = np.random.uniform(-1, 1, size=(self.batch_size, self.z_num))
