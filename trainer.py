@@ -50,6 +50,47 @@ def slerp(val, low, high):
         return (1.0-val) * low + val * high # L'Hopital's rule/LERP
     return np.sin((1.0-val)*omega) / so * low + np.sin(val*omega) / so * high
 
+class ModelSaver(object):
+    
+    def __init__(self, saver, tf):
+        self.saver = saver
+        self.tf = tf
+    
+    def save(self,
+                sess,
+                save_path,
+                global_step=None,
+                latest_filename=None,
+                meta_graph_suffix='meta',
+                write_meta_graph=True,
+                write_state=True,
+                strip_default_attrs=False,
+                save_debug_info=False):
+        if self.saver:
+            self.saver.save(
+                    sess, 
+                    save_path, 
+                    global_step, 
+                    latest_filename, 
+                    meta_graph_suffix, 
+                    write_meta_graph, 
+                    write_state, 
+                    strip_default_attrs, 
+                    save_debug_info)
+        self._saveModel(sess, save_path)
+    
+    def _saveModel(self, sess, model_dir):
+        export_dir = os.path.join(model_dir, "model")
+        try:
+            os.mkdir(export_dir)
+        except Exception as e:
+            pass
+        print ("Saving model to {}...".format(export_dir))
+        builder = tf.saved_model.builder.SavedModelBuilder(export_dir)
+        builder.add_meta_graph_and_variables(sess, [tf.saved_model.tag_constants.TRAINING])
+        builder.save()
+        print ("Saved model.")
+        
 class Trainer(object):
     def __init__(self, config, data_loader):
         self.config = config
@@ -97,10 +138,12 @@ class Trainer(object):
 
         self.saver = tf.train.Saver()
         self.summary_writer = tf.summary.FileWriter(self.model_dir)
+        
+        saverDecorator = ModelSaver(self.saver, tf)
 
         sv = tf.train.Supervisor(logdir=self.model_dir,
                                 is_chief=True,
-                                saver=self.saver,
+                                saver=saverDecorator,
                                 summary_op=None,
                                 summary_writer=self.summary_writer,
                                 save_model_secs=300,
@@ -122,19 +165,6 @@ class Trainer(object):
 
 
     def train(self):
-        
-        def exit_handler():
-            print ("Exit from training. Saving model...")
-            export_dir = os.path.join(self.model_dir, "model")
-            try:
-                os.mkdir(export_dir)
-            except:
-                pass
-            builder = tf.saved_model.builder.SavedModelBuilder(export_dir)
-            builder.add_meta_graph_and_variables(self.sess, [tf.saved_model.tag_constants.TRAINING])
-            builder.save()
-            print ("Saved model.")
-        atexit.register(exit_handler)
         
         z_fixed = np.random.uniform(-1, 1, size=(self.batch_size, self.z_num))
 
