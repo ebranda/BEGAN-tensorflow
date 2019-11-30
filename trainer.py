@@ -87,11 +87,12 @@ class ModelSaver(object):
             os.mkdir(export_dir)
         except Exception as e:
             pass
-        print ("Saving model to {}...".format(export_dir))
-        builder = tf.saved_model.builder.SavedModelBuilder(export_dir)
-        builder.add_meta_graph_and_variables(sess, [tf.saved_model.tag_constants.TRAINING])
-        builder.save()
-        print ("Saved model.")
+        # Labels/variables are missing
+        #print ("Saving model to {}...".format(export_dir))
+        #builder = tf.saved_model.builder.SavedModelBuilder(export_dir)
+        #builder.add_meta_graph_and_variables(sess, [tf.saved_model.tag_constants.TRAINING])
+        #builder.save()
+        #print ("Saved model.")
         
 class Trainer(object):
     def __init__(self, config, data_loader):
