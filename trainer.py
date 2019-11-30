@@ -54,6 +54,7 @@ class ModelSaver(object):
     
     def __init__(self, saver, tf):
         self.saver = saver
+        self.saver_def = saver.saver_def
         self.tf = tf
     
     def save(self,
