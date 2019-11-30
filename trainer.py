@@ -52,10 +52,11 @@ def slerp(val, low, high):
 
 class ModelSaver(object):
     
-    def __init__(self, saver, tf):
+    def __init__(self, saver, tf, model_path):
         self.saver = saver
         self.saver_def = saver.saver_def
         self.tf = tf
+        self.model_path = model_path
     
     def save(self,
                 sess,
@@ -78,10 +79,10 @@ class ModelSaver(object):
                     write_state, 
                     strip_default_attrs, 
                     save_debug_info)
-        self._saveModel(sess, save_path)
+        self._saveModel(sess)
     
-    def _saveModel(self, sess, model_dir):
-        export_dir = os.path.join(model_dir, "model")
+    def _saveModel(self, sess):
+        export_dir = os.path.join(self.model_path, "savedmodel")
         try:
             os.mkdir(export_dir)
         except Exception as e:
@@ -139,8 +140,8 @@ class Trainer(object):
 
         self.saver = tf.train.Saver()
         self.summary_writer = tf.summary.FileWriter(self.model_dir)
-        
-        saverDecorator = ModelSaver(self.saver, tf)
+        print("MODEL_DIR", self.model_dir, "LOAD_PATH", self.load_path)
+        saverDecorator = ModelSaver(self.saver, tf, self.load_path)
 
         sv = tf.train.Supervisor(logdir=self.model_dir,
                                 is_chief=True,
